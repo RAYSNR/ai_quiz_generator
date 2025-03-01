@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            background-color: #f8f8f8;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Properly Scaled YouTube Video */
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .quiz-container {
+            margin-top: 20px;
+            padding: 10px;
+        }
+
+        .question {
+            display: none;
+        }
+
+        .question.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>AI Quiz</h1>
+
+        <!-- YouTube Video (Dynamically Inserted) -->
+        <div class="video-container">
+            <iframe id="videoFrame" src="https://www.youtube.com/embed/vnl9Xf3wwU0" frameborder="0" allowfullscreen></iframe>
+        </div>
+
+        <!-- Quiz Section (Dynamically Inserted) -->
+        <div class="quiz-container">
+            <form id="quizForm">
+                
+        <div class='question' id='q0' style='display: block;'>
+            <p><strong>Q1:</strong> What is the interesting question posed in the video related to AI?</p>
+            <div class='options'>
+                
+                    <label>
+                        <input type='radio' name='q0' value='0'>
+                        Can AI think like humans?
+                    </label>
+                
+                    <label>
+                        <input type='radio' name='q0' value='1'>
+                        Is AI faster than human computation?
+                    </label>
+                
+                    <label>
+                        <input type='radio' name='q0' value='2'>
+                        Does different thinking mean no thinking?
+                    </label>
+                
+                    <label>
+                        <input type='radio' name='q0' value='3'>
+                        Can AI replace university professors?
+                    </label>
+                
+            </div>
+        </div>
+    
+        <div class='question' id='q1' style='display: none;'>
+            <p><strong>Q2:</strong> What field does the speaker mention being significantly impacted by AI?</p>
+            <div class='options'>
+                
+                    <label>
+                        <input type='radio' name='q1' value='0'>
+                        Biology
+                    </label>
+                
+                    <label>
+                        <input type='radio' name='q1' value='1'>
+                        Astronomy
+                    </label>
+                
+                    <label>
+                        <input type='radio' name='q1' value='2'>
+                        Chemistry
+                    </label>
+                
+                    <label>
+                        <input type='radio' name='q1' value='3'>
+                        Engineering
+                    </label>
+                
+            </div>
+        </div>
+    
+        <div class='question' id='q2' style='display: none;'>
+            <p><strong>Q3:</strong> Which wave of AI is described as having unsupervised and generative deep learning?</p>
+            <div class='options'>
+                
+                    <label>
+                        <input type='radio' name='q2' value='0'>
+                        First wave
+                    </label>
+                
+                    <label>
+                        <input type='radio' name='q2' value='1'>
+                        Second wave
+                    </label>
+                
+                    <label>
+                        <input type='radio' name='q2' value='2'>
+                        Third wave
+                    </label>
+                
+                    <label>
+                        <input type='radio' name='q2' value='3'>
+                        Fourth wave
+                    </label>
+                
+            </div>
+        </div>
+    
+        <div class='question' id='q3' style='display: none;'>
+            <p><strong>Q4:</strong> What example of generative AI usage in astronomy is mentioned?</p>
+            <div class='options'>
+                
+                    <label>
+                        <input type='radio' name='q3' value='0'>
+                        Predicting star patterns
+                    </label>
+                
+                    <label>
+                        <input type='radio' name='q3' value='1'>
+                        Detecting exomoons
+                    </label>
+                
+                    <label>
+                        <input type='radio' name='q3' value='2'>
+                        Generating fake galaxies
+                    </label>
+                
+                    <label>
+                        <input type='radio' name='q3' value='3'>
+                        Mapping Mars terrain
+                    </label>
+                
+            </div>
+        </div>
+    
+        <div class='question' id='q4' style='display: none;'>
+            <p><strong>Q5:</strong> What is one major concern journals have regarding AI tools?</p>
+            <div class='options'>
+                
+                    <label>
+                        <input type='radio' name='q4' value='0'>
+                        AI replacing editors
+                    </label>
+                
+                    <label>
+                        <input type='radio' name='q4' value='1'>
+                        AI writing grant applications
+                    </label>
+                
+                    <label>
+                        <input type='radio' name='q4' value='2'>
+                        AI being listed as co-author
+                    </label>
+                
+                    <label>
+                        <input type='radio' name='q4' value='3'>
+                        AI conducting experiments
+                    </label>
+                
+            </div>
+        </div>
+    
+        <div class='question' id='q5' style='display: none;'>
+            <p><strong>Q6:</strong> What major scientific principle did Albert Einstein develop from his 'happiest thought'?</p>
+            <div class='options'>
+                
+                    <label>
+                        <input type='radio' name='q5' value='0'>
+                        Theory of relativity
+                    </label>
+                
+                    <label>
+                        <input type='radio' name='q5' value='1'>
+                        Einstein equivalence principle
+                    </label>
+                
+                    <label>
+                        <input type='radio' name='q5' value='2'>
+                        Quantum mechanics
+                    </label>
+                
+                    <label>
+                        <input type='radio' name='q5' value='3'>
+                        Uncertainty principle
+                    </label>
+                
+            </div>
+        </div>
+    
+        <div class='question' id='q6' style='display: none;'>
+            <p><strong>Q7:</strong> What part of the traditional research cycle does the speaker believe AI could fully automate in the future?</p>
+            <div class='options'>
+                
+                    <label>
+                        <input type='radio' name='q6' value='0'>
+                        Data collection
+                    </label>
+                
+                    <label>
+                        <input type='radio' name='q6' value='1'>
+                        Peer review process
+                    </label>
+                
+                    <label>
+                        <input type='radio' name='q6' value='2'>
+                        Hypothesis generation
+                    </label>
+                
+                    <label>
+                        <input type='radio' name='q6' value='3'>
+                        Publishing papers
+                    </label>
+                
+            </div>
+        </div>
+    
+        <div class='question' id='q7' style='display: none;'>
+            <p><strong>Q8:</strong> What role does the speaker foresee AI playing in scientific productivity?</p>
+            <div class='options'>
+                
+                    <label>
+                        <input type='radio' name='q7' value='0'>
+                        Stagnating it
+                    </label>
+                
+                    <label>
+                        <input type='radio' name='q7' value='1'>
+                        Reducing innovation
+                    </label>
+                
+                    <label>
+                        <input type='radio' name='q7' value='2'>
+                        Causing an explosion
+                    </label>
+                
+                    <label>
+                        <input type='radio' name='q7' value='3'>
+                        Creating redundancy
+                    </label>
+                
+            </div>
+        </div>
+    
+        <div class='question' id='q8' style='display: none;'>
+            <p><strong>Q9:</strong> According to the speaker, why might universities continue to exist despite AI advancements?</p>
+            <div class='options'>
+                
+                    <label>
+                        <input type='radio' name='q8' value='0'>
+                        AI will replace professors completely
+                    </label>
+                
+                    <label>
+                        <input type='radio' name='q8' value='1'>
+                        Humans prefer learning from humans
+                    </label>
+                
+                    <label>
+                        <input type='radio' name='q8' value='2'>
+                        AI is too expensive for education
+                    </label>
+                
+                    <label>
+                        <input type='radio' name='q8' value='3'>
+                        Universities control all AI research
+                    </label>
+                
+            </div>
+        </div>
+    
+        <div class='question' id='q9' style='display: none;'>
+            <p><strong>Q10:</strong> What motivates many scientists in their work, according to the speaker?</p>
+            <div class='options'>
+                
+                    <label>
+                        <input type='radio' name='q9' value='0'>
+                        Financial gain
+                    </label>
+                
+                    <label>
+                        <input type='radio' name='q9' value='1'>
+                        Technological advancement
+                    </label>
+                
+                    <label>
+                        <input type='radio' name='q9' value='2'>
+                        Artistic expression
+                    </label>
+                
+                    <label>
+                        <input type='radio' name='q9' value='3'>
+                        Ravenous curiosity
+                    </label>
+                
+            </div>
+        </div>
+    
+                <button type="button" onclick="nextQuestion()">Next</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentQuestionIndex = 0;
+        let questions = document.querySelectorAll('.question');
+
+        function nextQuestion() {
+            if (currentQuestionIndex < questions.length - 1) {
+                questions[currentQuestionIndex].classList.remove('active');
+                currentQuestionIndex++;
+                questions[currentQuestionIndex].classList.add('active');
+            } else {
+                alert("Quiz Completed! Submit your answers.");
+            }
+        }
+
+        // Show the first question initially
+        if (questions.length > 0) {
+            questions[0].classList.add('active');
+        }
+    </script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
