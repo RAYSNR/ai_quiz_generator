@@ -21,7 +21,8 @@ app.post("/api/createQuiz", (req, res) => {
         { question: "Who benefits the most from this AI?", options: ["Students", "Businesses", "Researchers", "Everyone"], answer: "Everyone" },
         { question: "What is the AI’s main limitation?", options: ["Speed", "Cost", "Ethics", "Data Availability"], answer: "Ethics" },
         { question: "Which company is competing with this AI?", options: ["Meta", "Apple", "IBM", "All of the above"], answer: "All of the above" },
-        { question: "What is the future of this AI?", options: ["Better Performance", "Wider Adoption", "Regulation", "All of the above"], answer: "All of the above" }
+        { question: "What is the future of this AI?", options: ["Better Performance", "Wider Adoption", "Regulation", "All of the above"], answer: "All of the above" },
+        { question: "How accessible is this AI technology?", options: ["Limited Access", "Publicly Accessible", "Exclusive", "Subscription-Based"], answer: "Publicly Accessible" }
     ];
     res.json({ message: "Quiz generated successfully.", quiz: sampleQuiz });
 });
@@ -36,13 +37,13 @@ app.post("/api/submitQuiz", async (req, res) => {
     let transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
-            user: process.env.EMAIL_USER || "your-email@gmail.com",
-            pass: process.env.EMAIL_PASS || "your-app-password"
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS
         }
     });
 
     let mailOptions = {
-        from: "AI Hub Quiz <your-email@gmail.com>",
+        from: `AI Hub Quiz <${process.env.EMAIL_USER}>`,
         to: email,
         subject: "Your AI Hub Quiz Results",
         text: `Thank you for completing the quiz! Here are your responses:\n\n${JSON.stringify(responses, null, 2)}\n\nWe will analyze your results and get back to you soon!`
@@ -60,6 +61,7 @@ app.post("/api/submitQuiz", async (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
+
 
 
 
