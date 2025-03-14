@@ -10,38 +10,52 @@
     <input type="text" id="videoUrl" placeholder="Enter YouTube Video URL">
     <button onclick="submitUrl()">Submit</button>
 
+    <div id="videoContainer" style="margin-top: 20px;"></div>
+
     <script>
         function submitUrl() {
             const videoUrl = document.getElementById('videoUrl').value;
 
-            // Check if URL is entered
-            if (!videoUrl) {
-                alert("Please enter a YouTube URL.");
+            if (!videoUrl.trim()) {
+                alert("Please enter a valid YouTube URL.");
                 return;
             }
 
-            console.log("Submitting URL:", videoUrl);
-
-            fetch("https://aiquizgenerator-production-1bed.up.railway.app/api/transcript", { 
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ transcript: videoUrl }) 
+            fetch('/api/transcript', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ transcript: videoUrl })
             })
-            .then(response => {
-                console.log("Response received:", response);
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
-                console.log("Server response data:", data);
-                alert("Response: " + JSON.stringify(data));
+                alert(`Response: ${JSON.stringify(data)}`);
+                
+                // Extract YouTube Video ID
+                const videoId = extractYouTubeID(videoUrl);
+                if (videoId) {
+                    document.getElementById('videoContainer').innerHTML = `
+                        <iframe width="560" height="315" 
+                            src="https://www.youtube.com/embed/${videoId}" 
+                            frameborder="0" allowfullscreen>
+                        </iframe>
+                    `;
+                }
+
+                document.getElementById('videoUrl').value = ''; // Clear input field
             })
             .catch(error => {
-                console.error("Error:", error);
-                alert("Error: " + error.message);
+                console.error('Error:', error);
+                alert("An error occurred. Please try again.");
             });
+        }
+
+        function extractYouTubeID(url) {
+            const match = url.match(/(?:https?:\/\/)?(?:www\.)?youtu(?:\.be\/|be\.com\/(?:watch\?v=|embed\/|v\/|.+\?v=))([^&\n?#]+)/);
+            return match ? match[1] : null;
         }
     </script>
 </body>
 </html>
+
 
 
