@@ -1,1 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Input</title>
+</head>
+<body>
+    <h1>Enter YouTube Video URL</h1>
+    <input type="text" id="videoUrl" placeholder="Enter YouTube Video URL">
+    <button onclick="submitUrl()">Submit</button>
+
+    <script>
+        function submitUrl() {
+            const videoUrl = document.getElementById('videoUrl').value;
+            fetch('/api/createQuiz', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ videoUrl })
+            }).then(response => response.json())
+              .then(data => alert(JSON.stringify(data)))
+              .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>
 
