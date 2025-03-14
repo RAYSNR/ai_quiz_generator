@@ -12,7 +12,7 @@ const fs = require('fs');
 const path = require('path');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000; // Ensure Railway can set its own port
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -93,7 +93,7 @@ app.post('/api/createQuiz', async (req, res) => {
     }
 
     let quizHTML = quizData.map((q, index) => `
-        <div class='question' id='q${index}' style='display: ${index === 0 ? "block" : "none"};'>
+        <div class='question' id='q${index}' style='display: ${index === 0 ? "block" : "none"};'">
             <p><strong>Q${index + 1}:</strong> ${q.question}</p>
             <div class='options'>
                 ${q.options.map((opt, i) => `
@@ -147,9 +147,11 @@ app.post('/api/transcript', (req, res) => {
     res.json({ message: "Transcript received successfully", transcript });
 });
 
-app.listen(PORT, () => {
-    console.log(`Server running on http://192.168.1.6:${PORT}`);
+// Ensure the server is accessible on Railway
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running on port ${PORT}`);
 });
+
 
 
 
