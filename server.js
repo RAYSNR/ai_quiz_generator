@@ -2,7 +2,6 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const fs = require('fs');
 const path = require('path');
 
 const app = express();
@@ -10,53 +9,51 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static('public'));
 
-// Health check endpoint (for debugging)
+// Health check endpoint
 app.get('/health', (req, res) => {
     res.status(200).send('OK');
 });
 
-// Serve the quiz input page as the default homepage
+// Serve the quiz input page
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'quiz_input.html'));
 });
 
-// API route for handling transcript processing
-app.post('/api/transcript', (req, res) => {
-    const { transcript } = req.body;
+// Simulated quiz generation API
+app.post('/api/createQuiz', (req, res) => {
+    const { videoUrl } = req.body;
 
-    if (!transcript) {
-        return res.status(400).json({ error: "Transcript is required" });
+    if (!videoUrl) {
+        return res.status(400).json({ error: "Video URL is required" });
     }
 
-    console.log("Received Transcript:", transcript);
-    res.json({ message: "Transcript received successfully", transcript });
+    console.log("Received YouTube URL:", videoUrl);
+
+    // Simulated quiz response
+    const quiz = [
+        { 
+            question: "What is the main topic of the video?",
+            options: ["AI", "Quantum Computing", "Blockchain", "Space Travel"],
+            answer: "AI"
+        },
+        { 
+            question: "Who is the presenter?",
+            options: ["Elon Musk", "Mark Zuckerberg", "Sundar Pichai", "Satya Nadella"],
+            answer: "Sundar Pichai"
+        }
+    ];
+
+    res.json({ message: "Quiz generated successfully", quiz });
 });
 
-// Catch-all for undefined routes
-app.use((req, res) => {
-    res.status(404).json({ error: "Route not found" });
-});
-
-// Set dynamic port (Railway will assign automatically, default to 3000)
+// Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`✅ Server running on port ${PORT}`);
-    console.log(`🌍 Environment: ${process.env.NODE_ENV || 'Not Set'}`);
-    console.log(`📂 Working Directory: ${process.cwd()}`);
 });
 
-// Global error handling (captures silent failures)
-app.use((err, req, res, next) => {
-    console.error("❌ Server Error:", err.stack);
-    res.status(500).send('Internal Server Error');
-});
-
-// Handle unhandled rejections (catches async failures)
-process.on('unhandledRejection', (reason, promise) => {
-    console.error("⚠️ Unhandled Rejection:", promise, "Reason:", reason);
-});
 
 
 
