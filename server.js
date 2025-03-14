@@ -4,64 +4,63 @@ const nodemailer = require("nodemailer");
 const cors = require("cors");
 
 const app = express();
-app.use(bodyParser.json());
-app.use(cors());
-
 const PORT = process.env.PORT || 8080;
 
-// Serve static files
+app.use(cors());
+app.use(bodyParser.json());
 app.use(express.static("public"));
 
-// Placeholder for quiz data storage
-let quizResults = [];
-
-// API to receive quiz submission
-app.post("/api/submitQuiz", (req, res) => {
-    const { email, responses } = req.body;
-
-    if (!email || !responses) {
-        return res.status(400).json({ error: "Missing email or responses" });
-    }
-
-    // Store the quiz results (this should be replaced with a database)
-    quizResults.push({ email, responses });
-
-    // Send confirmation email
-    sendMail(email, responses);
-
-    res.json({ message: "Quiz submitted! Check your email for results." });
+// Endpoint to generate a quiz
+app.post("/api/createQuiz", (req, res) => {
+    const sampleQuiz = [
+        { question: "What is the main topic of the video?", options: ["AI", "Quantum Computing", "Blockchain", "Space Travel"], answer: "AI" },
+        { question: "Who is the presenter?", options: ["Elon Musk", "Mark Zuckerberg", "Sundar Pichai", "Satya Nadella"], answer: "Sundar Pichai" },
+        { question: "Which technology is mentioned first?", options: ["AI", "Quantum Computing", "Blockchain", "5G"], answer: "AI" },
+        { question: "What year was this AI model released?", options: ["2023", "2024", "2025", "2026"], answer: "2024" },
+        { question: "What problem does this AI solve?", options: ["Healthcare", "Automation", "Education", "All of the above"], answer: "All of the above" },
+        { question: "Who benefits the most from this AI?", options: ["Students", "Businesses", "Researchers", "Everyone"], answer: "Everyone" },
+        { question: "What is the AI’s main limitation?", options: ["Speed", "Cost", "Ethics", "Data Availability"], answer: "Ethics" },
+        { question: "Which company is competing with this AI?", options: ["Meta", "Apple", "IBM", "All of the above"], answer: "All of the above" },
+        { question: "What is the future of this AI?", options: ["Better Performance", "Wider Adoption", "Regulation", "All of the above"], answer: "All of the above" }
+    ];
+    res.json({ message: "Quiz generated successfully.", quiz: sampleQuiz });
 });
 
-// Email function using Nodemailer
-function sendMail(email, responses) {
-    const transporter = nodemailer.createTransport({
+// Endpoint to handle quiz submission
+app.post("/api/submitQuiz", async (req, res) => {
+    const { email, responses } = req.body;
+    if (!email || !responses || responses.length === 0) {
+        return res.status(400).json({ message: "Invalid submission. Email and responses required." });
+    }
+
+    let transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
-            user: "your-email@gmail.com", // Replace with your email
-            pass: "your-email-password" // Replace with your password or App Password
+            user: process.env.EMAIL_USER || "your-email@gmail.com",
+            pass: process.env.EMAIL_PASS || "your-app-password"
         }
     });
 
-    const mailOptions = {
-        from: "your-email@gmail.com",
+    let mailOptions = {
+        from: "AI Hub Quiz <your-email@gmail.com>",
         to: email,
-        subject: "Your Quiz Results",
-        text: `Here are your responses: ${JSON.stringify(responses, null, 2)}`
+        subject: "Your AI Hub Quiz Results",
+        text: `Thank you for completing the quiz! Here are your responses:\n\n${JSON.stringify(responses, null, 2)}\n\nWe will analyze your results and get back to you soon!`
     };
 
-    transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            console.error("Email send error:", error);
-        } else {
-            console.log("Email sent:", info.response);
-        }
-    });
-}
+    try {
+        await transporter.sendMail(mailOptions);
+        res.json({ message: "Quiz submitted! Check your email for results." });
+    } catch (error) {
+        console.error("Error sending email:", error);
+        res.status(500).json({ message: "Failed to send email." });
+    }
+});
 
-// Start the server
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
+
 
 
 
