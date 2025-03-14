@@ -3,17 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz Input</title>
-</head>
-<body>
-    <h1>Enter YouTube Video URL</h1>
-    <input type="text" id="videoUrl" placeholder="Enter YouTube Video URL">
-    <button onclick="submitUrl()">Submit</button>
-
-    <div id="videoContainer"></div>
-    <div id="quizContainer"></div>
-
+    <title>AI Hub Quiz</title>
     <script>
+        let currentQuestionIndex = 0;
+        let quizData = [];
+        let userResponses = [];
+
         function submitUrl() {
             const videoUrl = document.getElementById('videoUrl').value;
             fetch('/api/createQuiz', {
@@ -23,49 +18,76 @@
             }).then(response => response.json())
               .then(data => {
                   alert(`Response: ${JSON.stringify(data)}`);
-                  
-                  // Embed YouTube Video
-                  document.getElementById('videoContainer').innerHTML = `
-                      <iframe width="560" height="315" 
-                      src="https://www.youtube.com/embed/${getYouTubeID(videoUrl)}" 
-                      frameborder="0" allowfullscreen></iframe>
-                  `;
-
-                  // Display first question
-                  displayQuestion(data.quiz[0], 0, data.quiz);
+                  if (data.quiz) {
+                      quizData = data.quiz;
+                      document.getElementById('videoContainer').innerHTML = 
+                          `<iframe width="560" height="315" src="${videoUrl.replace('watch?v=', 'embed/')}" 
+                          frameborder="0" allowfullscreen></iframe>`;
+                      displayQuestion();
+                  }
               })
               .catch(error => console.error('Error:', error));
         }
 
-        function getYouTubeID(url) {
-            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-            const match = url.match(regExp);
-            return (match && match[2].length === 11) ? match[2] : null;
-        }
+        function displayQuestion() {
+            if (currentQuestionIndex < quizData.length) {
+                const question = quizData[currentQuestionIndex];
+                let html = `<h2>Question ${currentQuestionIndex + 1}: ${question.question}</h2>`;
+                question.options.forEach((option, index) => {
+                    html += `<button onclick="selectAnswer('${option}')">${option}</button> `;
+                });
 
-        function displayQuestion(questionObj, index, quiz) {
-            if (!questionObj) return;
-            const quizContainer = document.getElementById('quizContainer');
-            quizContainer.innerHTML = `
-                <h2>Question ${index + 1}: ${questionObj.question}</h2>
-                <button onclick="checkAnswer('${questionObj.options[0]}', '${questionObj.answer}', ${index + 1}, quiz)">${questionObj.options[0]}</button>
-                <button onclick="checkAnswer('${questionObj.options[1]}', '${questionObj.answer}', ${index + 1}, quiz)">${questionObj.options[1]}</button>
-                <button onclick="checkAnswer('${questionObj.options[2]}', '${questionObj.answer}', ${index + 1}, quiz)">${questionObj.options[2]}</button>
-                <button onclick="checkAnswer('${questionObj.options[3]}', '${questionObj.answer}', ${index + 1}, quiz)">${questionObj.options[3]}</button>
-            `;
-        }
-
-        function checkAnswer(selected, correct, nextIndex, quiz) {
-            if (selected === correct) {
-                alert("✅ Correct!");
-            } else {
-                alert("❌ Wrong! The correct answer was: " + correct);
+                if (currentQuestionIndex === quizData.length - 1) {
+                    html += `<br><br><input type="email" id="userEmail" placeholder="Enter your email" required>
+                             <button onclick="submitQuiz()">Submit</button>`;
+                } else {
+                    html += `<br><br><button onclick="nextQuestion()" style="display:none;" id="nextButton">Next</button>`;
+                }
+                document.getElementById('quizContainer').innerHTML = html;
             }
-            displayQuestion(quiz[nextIndex], nextIndex, quiz);
+        }
+
+        function selectAnswer(answer) {
+            userResponses.push({ question: quizData[currentQuestionIndex].question, answer });
+            if (document.getElementById('nextButton')) {
+                document.getElementById('nextButton').style.display = 'inline-block';
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            displayQuestion();
+        }
+
+        function submitQuiz() {
+            const email = document.getElementById('userEmail').value;
+            if (!email) {
+                alert("Please enter your email before submitting.");
+                return;
+            }
+            fetch('/api/submitQuiz', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, responses: userResponses })
+            }).then(response => response.json())
+              .then(data => {
+                  alert(`Quiz submitted! Check your email.`);
+                  location.reload();
+              })
+              .catch(error => console.error('Error:', error));
         }
     </script>
+</head>
+<body>
+    <h1>AI Hub Quiz - <span id="quizFileName"></span></h1>
+    <input type="text" id="videoUrl" placeholder="Enter YouTube Video URL">
+    <button onclick="submitUrl()">Submit</button>
+    
+    <div id="videoContainer"></div>
+    <div id="quizContainer"></div>
 </body>
 </html>
+
 
 
 
