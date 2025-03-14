@@ -10,7 +10,7 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Health check endpoint (for debugging)
 app.get('/health', (req, res) => {
@@ -34,8 +34,13 @@ app.post('/api/transcript', (req, res) => {
     res.json({ message: "Transcript received successfully", transcript });
 });
 
-// Set dynamic port (Railway will assign automatically)
-const PORT = process.env.PORT;
+// Catch-all for undefined routes
+app.use((req, res) => {
+    res.status(404).json({ error: "Route not found" });
+});
+
+// Set dynamic port (Railway will assign automatically, default to 3000)
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`✅ Server running on port ${PORT}`);
     console.log(`🌍 Environment: ${process.env.NODE_ENV || 'Not Set'}`);
@@ -52,6 +57,7 @@ app.use((err, req, res, next) => {
 process.on('unhandledRejection', (reason, promise) => {
     console.error("⚠️ Unhandled Rejection:", promise, "Reason:", reason);
 });
+
 
 
 
