@@ -5,9 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Hub Quiz</title>
     <script>
-        let currentQuestionIndex = 0;
         let quizData = [];
-        let userResponses = [];
+        let currentQuestionIndex = 0;
 
         function submitUrl() {
             const videoUrl = document.getElementById('videoUrl').value;
@@ -15,78 +14,81 @@
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ videoUrl })
-            }).then(response => response.json())
-              .then(data => {
-                  alert(`Response: ${JSON.stringify(data)}`);
-                  if (data.quiz) {
-                      quizData = data.quiz;
-                      document.getElementById('videoContainer').innerHTML = 
-                          `<iframe width="560" height="315" src="${videoUrl.replace('watch?v=', 'embed/')}" 
-                          frameborder="0" allowfullscreen></iframe>`;
-                      displayQuestion();
-                  }
-              })
-              .catch(error => console.error('Error:', error));
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert("Response: " + JSON.stringify(data));
+                if (data.quiz) {
+                    quizData = data.quiz;
+                    document.getElementById('quizContainer').innerHTML = "";
+                    showQuestion();
+                }
+            })
+            .catch(error => console.error('Error:', error));
         }
 
-        function displayQuestion() {
+        function showQuestion() {
             if (currentQuestionIndex < quizData.length) {
                 const question = quizData[currentQuestionIndex];
-                let html = `<h2>Question ${currentQuestionIndex + 1}: ${question.question}</h2>`;
+                let quizHtml = `<h2>Question ${currentQuestionIndex + 1}: ${question.question}</h2>`;
+                
                 question.options.forEach((option, index) => {
-                    html += `<button onclick="selectAnswer('${option}')">${option}</button> `;
+                    quizHtml += `<button onclick="selectAnswer(${index})">${option}</button> `;
                 });
 
+                quizHtml += `<br><br>`;
+                
                 if (currentQuestionIndex === quizData.length - 1) {
-                    html += `<br><br><input type="email" id="userEmail" placeholder="Enter your email" required>
-                             <button onclick="submitQuiz()">Submit</button>`;
+                    quizHtml += `<input type="email" id="emailInput" placeholder="Enter your email"><br>`;
+                    quizHtml += `<button onclick="submitQuiz()">Submit</button>`;
                 } else {
-                    html += `<br><br><button onclick="nextQuestion()" style="display:none;" id="nextButton">Next</button>`;
+                    quizHtml += `<button onclick="nextQuestion()">Next</button>`;
                 }
-                document.getElementById('quizContainer').innerHTML = html;
+
+                document.getElementById('quizContainer').innerHTML = quizHtml;
             }
         }
 
-        function selectAnswer(answer) {
-            userResponses.push({ question: quizData[currentQuestionIndex].question, answer });
-            if (document.getElementById('nextButton')) {
-                document.getElementById('nextButton').style.display = 'inline-block';
-            }
+        function selectAnswer(index) {
+            // Store selected answer if needed for future analysis
+            console.log("Selected Answer:", quizData[currentQuestionIndex].options[index]);
         }
 
         function nextQuestion() {
             currentQuestionIndex++;
-            displayQuestion();
+            showQuestion();
         }
 
         function submitQuiz() {
-            const email = document.getElementById('userEmail').value;
+            const email = document.getElementById('emailInput').value;
             if (!email) {
                 alert("Please enter your email before submitting.");
                 return;
             }
+
             fetch('/api/submitQuiz', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, responses: userResponses })
-            }).then(response => response.json())
-              .then(data => {
-                  alert(`Quiz submitted! Check your email.`);
-                  location.reload();
-              })
-              .catch(error => console.error('Error:', error));
+                body: JSON.stringify({ quizData, email })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert("Quiz submitted! Check your email for results.");
+                document.getElementById('quizContainer').innerHTML = "<h2>Thank you for participating!</h2>";
+            })
+            .catch(error => console.error('Error:', error));
         }
     </script>
 </head>
 <body>
-    <h1>AI Hub Quiz - <span id="quizFileName"></span></h1>
+    <h1>AI Hub Quiz - <span id="quizFilename"></span></h1>
     <input type="text" id="videoUrl" placeholder="Enter YouTube Video URL">
     <button onclick="submitUrl()">Submit</button>
-    
-    <div id="videoContainer"></div>
+    <br><br>
     <div id="quizContainer"></div>
 </body>
 </html>
+
 
 
 
