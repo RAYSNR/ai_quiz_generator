@@ -13,15 +13,35 @@
     <script>
         function submitUrl() {
             const videoUrl = document.getElementById('videoUrl').value;
-            fetch('/api/createQuiz', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ videoUrl })
-            }).then(response => response.json())
-              .then(data => alert(JSON.stringify(data)))
-              .catch(error => console.error('Error:', error));
+
+            // Check if URL is entered
+            if (!videoUrl) {
+                alert("Please enter a YouTube URL.");
+                return;
+            }
+
+            console.log("Submitting URL:", videoUrl);
+
+            fetch("https://aiquizgenerator-production-1bed.up.railway.app/api/transcript", { 
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ transcript: videoUrl }) 
+            })
+            .then(response => {
+                console.log("Response received:", response);
+                return response.json();
+            })
+            .then(data => {
+                console.log("Server response data:", data);
+                alert("Response: " + JSON.stringify(data));
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("Error: " + error.message);
+            });
         }
     </script>
 </body>
 </html>
+
 
