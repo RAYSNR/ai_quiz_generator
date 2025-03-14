@@ -10,52 +10,63 @@
     <input type="text" id="videoUrl" placeholder="Enter YouTube Video URL">
     <button onclick="submitUrl()">Submit</button>
 
-    <div id="videoContainer" style="margin-top: 20px;"></div>
+    <div id="videoContainer"></div>
+    <div id="quizContainer"></div>
 
     <script>
         function submitUrl() {
             const videoUrl = document.getElementById('videoUrl').value;
-
-            if (!videoUrl.trim()) {
-                alert("Please enter a valid YouTube URL.");
-                return;
-            }
-
-            fetch('/api/transcript', {
+            fetch('/api/createQuiz', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ transcript: videoUrl })
-            })
-            .then(response => response.json())
-            .then(data => {
-                alert(`Response: ${JSON.stringify(data)}`);
-                
-                // Extract YouTube Video ID
-                const videoId = extractYouTubeID(videoUrl);
-                if (videoId) {
-                    document.getElementById('videoContainer').innerHTML = `
-                        <iframe width="560" height="315" 
-                            src="https://www.youtube.com/embed/${videoId}" 
-                            frameborder="0" allowfullscreen>
-                        </iframe>
-                    `;
-                }
+                body: JSON.stringify({ videoUrl })
+            }).then(response => response.json())
+              .then(data => {
+                  alert(`Response: ${JSON.stringify(data)}`);
+                  
+                  // Embed YouTube Video
+                  document.getElementById('videoContainer').innerHTML = `
+                      <iframe width="560" height="315" 
+                      src="https://www.youtube.com/embed/${getYouTubeID(videoUrl)}" 
+                      frameborder="0" allowfullscreen></iframe>
+                  `;
 
-                document.getElementById('videoUrl').value = ''; // Clear input field
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert("An error occurred. Please try again.");
-            });
+                  // Display first question
+                  displayQuestion(data.quiz[0], 0, data.quiz);
+              })
+              .catch(error => console.error('Error:', error));
         }
 
-        function extractYouTubeID(url) {
-            const match = url.match(/(?:https?:\/\/)?(?:www\.)?youtu(?:\.be\/|be\.com\/(?:watch\?v=|embed\/|v\/|.+\?v=))([^&\n?#]+)/);
-            return match ? match[1] : null;
+        function getYouTubeID(url) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+
+        function displayQuestion(questionObj, index, quiz) {
+            if (!questionObj) return;
+            const quizContainer = document.getElementById('quizContainer');
+            quizContainer.innerHTML = `
+                <h2>Question ${index + 1}: ${questionObj.question}</h2>
+                <button onclick="checkAnswer('${questionObj.options[0]}', '${questionObj.answer}', ${index + 1}, quiz)">${questionObj.options[0]}</button>
+                <button onclick="checkAnswer('${questionObj.options[1]}', '${questionObj.answer}', ${index + 1}, quiz)">${questionObj.options[1]}</button>
+                <button onclick="checkAnswer('${questionObj.options[2]}', '${questionObj.answer}', ${index + 1}, quiz)">${questionObj.options[2]}</button>
+                <button onclick="checkAnswer('${questionObj.options[3]}', '${questionObj.answer}', ${index + 1}, quiz)">${questionObj.options[3]}</button>
+            `;
+        }
+
+        function checkAnswer(selected, correct, nextIndex, quiz) {
+            if (selected === correct) {
+                alert("✅ Correct!");
+            } else {
+                alert("❌ Wrong! The correct answer was: " + correct);
+            }
+            displayQuestion(quiz[nextIndex], nextIndex, quiz);
         }
     </script>
 </body>
 </html>
+
 
 
 
