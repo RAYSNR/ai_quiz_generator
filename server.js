@@ -35,7 +35,7 @@ testOpenAI();
 
 // Serve quiz input page
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'create_quiz.html'));
+    res.sendFile(path.join(__dirname, 'public', 'quiz_input.html'));
 });
 
 // Generate AI quiz questions
